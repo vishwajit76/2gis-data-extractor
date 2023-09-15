@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "2gis Map Extractor",
+  "version": "1.0",
+  "description": "2gis Data Extractor tool.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "host_permissions" : [
+		"https://2gis.ae"
+	],
+  "permissions": [
+    "tabs",
+    "bookmarks",
+    "storage",
+    "activeTab",
+    "downloads",
+    "management", 
+    "scripting",
+    "notifications",
+    "nativeMessaging",
+    "system.cpu", 
+    "system.memory",
+    "system.storage",
+    "system.display"
+  ],
+  "background": {
+    "service_worker": "worker_wrapper.js"
+  },
+  "content_scripts": [{ 
+		"js": ["progress.js","content.js"] ,
+		"matches": ["https://2gis.ae/*"],
+		"run_at": "document_end"
+	}]
+
+ 
+}
