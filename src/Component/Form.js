@@ -153,7 +153,7 @@ const Form = () => {
   const [setting, setSetting] = useState(null);
   const [licenseDetails, setLicenseDetails] = useState(null);
 
-  const [isLicenseValid, setIsLicenseValid] = useState(true);
+  const [isLicenseValid, setIsLicenseValid] = useState(false);
   const [licenseMessage, setLicenseMessage] = useState("");
 
   const [scrapData, setScrapData] = useState({
@@ -359,7 +359,7 @@ const Form = () => {
         setIsLicenseValid(true);
         setLicenseMessage("");
       } else {
-        // setIsLicenseValid(false);
+        setIsLicenseValid(false);
         setLicenseDetails(null);
         setLicenseMessage(response.message);
       }
