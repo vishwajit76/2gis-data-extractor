@@ -1308,7 +1308,8 @@ const Form = () => {
                               secondary={
                                 <Link
                                   underline="none"
-                                  href={product?.contactNumber}
+                                  href={"tel:"+product?.contactNumber}
+                                  target="_blank"
                                   variant="body2"
                                 >
                                   {product?.contactNumber}
@@ -1330,8 +1331,9 @@ const Form = () => {
                               secondary={
                                 <Link
                                   underline="none"
-                                  href={product?.email}
+                                  href={"mailto:"+product?.email}
                                   variant="body2"
+                                  target="_blank"
                                 >
                                   {product?.email}
                                 </Link>
@@ -1354,6 +1356,7 @@ const Form = () => {
                                   underline="none"
                                   href={product?.siteUrl}
                                   variant="body2"
+                                  target="_blank"
                                 >
                                   {product?.siteUrl}
                                 </Link>
