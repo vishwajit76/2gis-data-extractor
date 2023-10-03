@@ -1370,7 +1370,7 @@ const Form = () => {
 
                       <Typography variant="h6">{t("disclaimer")}:</Typography>
                       <Typography variant="caption">
-                        {t("certified")}
+                        {t("certified2gis")}
                       </Typography>
                     </Box>
                   ) : (

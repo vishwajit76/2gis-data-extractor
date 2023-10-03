@@ -18,13 +18,15 @@ function getParameterByName(queryString, name) {
   return decodeURIComponent(results[1].replace(/\+/g, " ")) || "";
 }
 
-selectCard = (e) => {
+selectCard = (item,e) => {
   console.log("selectCard:", e);
   return new Promise((t, l) => {
     try {
       //document.getElementsByClassName("_awwm2v").item(1).getElementsByClassName("_1kf6gff").item(e).click();
 
-      document.getElementsByClassName("_1kf6gff").item(e).click();
+      //document.getElementsByClassName("_1kf6gff").item(e).click();
+
+      item.click();
 
       t(true);
     } catch (e) {
@@ -46,8 +48,8 @@ timeout = (e) => {
   });
 };
 
-scrapCurrentPage = (cardIndex) => {
-  return new Promise((l, a) => {
+scrapCurrentPage = (item,cardIndex) => {
+  return new Promise(async (l, a) => {
     try {
       if (document.getElementsByClassName("_r47nf").length >= 2) {
         let a = {};
@@ -57,9 +59,7 @@ scrapCurrentPage = (cardIndex) => {
         try {
           //if (null === card.getElementsByClassName("_tvxwjf").item(0)) {
 
-          a.name = document
-            .getElementsByClassName("_1kf6gff")
-            .item(cardIndex)
+          a.name = item
             .getElementsByClassName("_zjunba")
             .item(0)
             .querySelector("a > span > span").innerText;
@@ -126,9 +126,7 @@ scrapCurrentPage = (cardIndex) => {
           //   .getElementsByClassName("_1w9o2igt")
           //   .item(0).innerText;
 
-          a.business = document
-            .getElementsByClassName("_1kf6gff")
-            .item(cardIndex)
+          a.business =item
             .getElementsByClassName("_1idnaau")
             .item(0)
             .querySelector("span").innerText;
@@ -137,9 +135,7 @@ scrapCurrentPage = (cardIndex) => {
         }
 
         try {
-          a.address = document
-            .getElementsByClassName("_1kf6gff")
-            .item(cardIndex)
+          a.address = item
             .getElementsByClassName("_1w9o2igt")
             .item(0).innerText;
           // const addressLine1 =  card.getElementsByClassName('_49kxlr').item(0).getElementsByClassName(
@@ -178,15 +174,38 @@ scrapCurrentPage = (cardIndex) => {
           //     .getElementsByClassName("a")
           //     .item(0).href).replace("tel:", "");
 
-          const url = card
+          card
+          .getElementsByClassName("_49kxlr")
+          .item(2)
+          .querySelector("button")
+          .click();
+
+          const urls = card
             .getElementsByClassName("_49kxlr")
             .item(2)
-            .querySelector("a")
-            .getAttribute("href");
+            .querySelectorAll("a");
+            //.getAttribute("href");
 
-          if (url.startsWith("tel")) {
-            a.phone = url.replace("tel:", "");
+            a.phone = [];
+          if(urls.length > 0){
+
+            await asyncForEach(urls, async (aTag, i) => {
+
+              const url = aTag.getAttribute("href");
+
+              if (url.startsWith("tel")) {
+                a.phone.push(url.replace("tel:", ""));
+              }
+            })
           }
+
+
+          a.phone = a.phone.join(",");
+         
+
+
+         
+
         } catch (e) {
           console.log("phone: error: ", e);
         }
@@ -265,11 +284,17 @@ startScraping = (keyword, setting) => {
   console.log("startScraping start");
 
   return new Promise(async (resolve, reject) => {
-    if (null !== document.getElementsByClassName("_n5hmn94").item(0)) {
+
+    const items1 = document.getElementsByClassName("_1kf6gff");
+    const items2 = document.getElementsByClassName("_5b28jpo");
+
+    const items = [...items1,...items2];
+
+    if (null !== document.getElementsByClassName("_n5hmn94").item(0) || items.length > 0) {
       console.log("startScraping next page exist");
 
       //start scraping
-      const items = document.getElementsByClassName("_1kf6gff");
+     
       const totalCards = items.length;
 
       console.log("startScraping total card:", totalCards);
@@ -282,7 +307,7 @@ startScraping = (keyword, setting) => {
       //items.item(i).click();
 
       await asyncForEach(items, async (item, i) => {
-        const selectCardSuccess = await selectCard(i);
+        const selectCardSuccess = await selectCard(item,i);
 
         await timeout((setting.delay ?? 1) * 2000);
 
@@ -291,7 +316,7 @@ startScraping = (keyword, setting) => {
           // var cardPopupResult = null;
           // while (goLoop) {
           //await timeout((setting.delay ?? 1) * 1000);
-          cardPopupResult = await scrapCurrentPage(i);
+          cardPopupResult = await scrapCurrentPage(item,i);
 
           console.log(
             "startScraping cardPopupResult:",
@@ -363,17 +388,19 @@ startScraping = (keyword, setting) => {
         //const prevPageClass = pageBox.querySelectorAll("div")[0].className;
         const nextPageClass = pageBox.querySelectorAll("div")[1].className;
 
-        //1st page
-        if (nextPageClass === enablePage) {
+        const nextBtn = document.getElementsByClassName("_n5hmn94");
 
-          if(page === 2 && false){
-            alert("This is a trial demo you can't scrape more then 2 pages")
-            isDone = true;
-          }else{
+        //1st page
+        if (nextPageClass === enablePage && nextBtn.length > 0) {
+
+          // if(page === 2 && false){
+          //   alert("This is a trial demo you can't scrape more then 2 pages")
+          //   isDone = true;
+          // }else{
             pageBox.querySelectorAll("div")[1].click();
             page = page + 1;
             await timeout(2000);
-          }
+          //}
         } else {
           isDone = true;
         }
@@ -385,6 +412,7 @@ startScraping = (keyword, setting) => {
         // }
       } catch (e) {
         console.log(e);
+        isDone = true;
       }
     }
   }

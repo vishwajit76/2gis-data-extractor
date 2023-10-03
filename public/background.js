@@ -2,8 +2,7 @@
 // chrome.storage.local.remove('isCheckActive');
 var DEVICE_ID = "xyz";
 var DATA = {};
-const PRODUCT_ID = "62a0769393de826dc890433d";
-// var DEVICE_ID = "123abc";
+const PRODUCT_ID = "650d35262fc68dbaa51329b5";
 var DATA = {};
 var BUILD_VERSION = 101;
 const API_BASE = "https://api.digibulkmarketing.com/license/";
