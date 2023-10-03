@@ -11,17 +11,11 @@
 	],
   "permissions": [
     "tabs",
-    "bookmarks",
     "storage",
     "activeTab",
     "downloads",
-    "management", 
-    "scripting",
-    "notifications",
-    "nativeMessaging",
     "system.cpu", 
     "system.memory",
-    "system.storage",
     "system.display"
   ],
   "background": {
