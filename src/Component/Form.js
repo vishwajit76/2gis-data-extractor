@@ -182,7 +182,7 @@ const Form = () => {
   const [selectedTabId, setSelectedTabId] = useState(0);
 
   const [delay, setDelay] = useState(1);
-  const [selectLang,setSelectLang] = useState('en')
+  const [selectLang, setSelectLang] = useState('en')
   const [dataFormate, setDataFormate] = useState("csv");
   const [removeDuplicate, setRemoveDuplicate] = useState("only_phone");
 
@@ -202,7 +202,8 @@ const Form = () => {
 
   const [renewKey, setRenewKey] = useState("");
   const [renewOpen, setRenewOpen] = useState(false);
-
+  const [localmanifestVersion, setLocalmanifestVersion] = useState('');
+  const [isUpdate, setIsUpdate] = useState(true)
   const renewOpenForm = () => {
     setRenewKey("");
     setRenewOpen(true);
@@ -246,7 +247,7 @@ const Form = () => {
 
   const getProductData = () => {
     sendChromeMessage({ type: "get_product" }, (response) => {
-      console.log("get_product",response)
+      console.log("get_product", response)
 
       if (response.status) {
         //setIsLoading(false);
@@ -353,7 +354,7 @@ const Form = () => {
 
   const getLicenseDetails = () => {
     sendChromeMessage({ type: "get_details" }, (response) => {
-      console.log("get_details",response)
+      console.log("get_details", response)
 
       if (response.status == true) {
         setIsLicenseValid(true);
@@ -385,6 +386,7 @@ const Form = () => {
     getSetting();
     getProductData();
     getLicenseDetails();
+    getVersion();
     getScrapeData();
   }, []);
 
@@ -505,7 +507,7 @@ const Form = () => {
       removeDuplicate: removeDuplicate,
       delay: delay,
       extractCol: extractCol,
-      lang:selectLang
+      lang: selectLang
     };
     sendChromeMessage({ setting: data, type: "save_setting" }, (response) => {
       if (response.status) {
@@ -608,7 +610,39 @@ const Form = () => {
     return false;
   };
 
+  const getTrial = () => {
+    sendChromeMessage({ type: "get_trial" }, (response) => {
+      console.log("get one day trial demo", response)
+      if (response.status) {
+        setKey(response.key)
+        enqueueSnackbar(response.message, { variant: "success" });
+      } else {
+        setKey(response.key)
+        enqueueSnackbar(response.message, { variant: "error" });
+      }
 
+    })
+  }
+  const getVersion = () => {
+
+    sendChromeMessage({ type: "get_version" }, (response) => {
+      console.log("Background  check version0", response);
+      // let data = response.version.replace(/\./g, "");
+      setLocalmanifestVersion(response.version)
+
+    });
+
+  }
+  const updateCancel = () => {
+    let data = product?.forceUpdate ?? ""
+    if (data) {
+      setIsUpdate(true)
+    } else {
+      console.error("data", data)
+      setIsUpdate(false);
+    }
+
+  };
 
   const totalSlider = () => {
     var count = 0;
@@ -699,9 +733,41 @@ const Form = () => {
             </Typography>
           </DialogContent>
           <DialogActions>
-            <Button size="small" variant="contained" onClick={renewLicenseKey}>
-              {t("renew")}
-            </Button>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+              sx={{ mt: 0 }}
+            >
+              <Button size="small" variant="contained" onClick={renewLicenseKey}>
+                {t("renew")}
+              </Button>
+
+              {product && rData?.active_shop == true ? (
+                <Grid item xs={4}>
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="success"
+
+                  >
+                    <Link
+                      underline="none"
+                      href={
+                        product?.siteUrl
+                          ? product.siteUrl
+                          : rData?.buy_url
+                      } target="_blank" >
+                      {t("buyNow")}
+                    </Link>
+
+                  </Button>
+                </Grid>
+              ) : (
+                <></>
+              )}
+            </Stack>
           </DialogActions>
         </BootstrapDialog>
 
@@ -718,7 +784,7 @@ const Form = () => {
             // },
           }}
         >
-        
+
           <Stack
             direction="row"
             justifyContent="center"
@@ -745,7 +811,52 @@ const Form = () => {
 
           {isLicenseValid ? (
             <>
+              {product?.version > localmanifestVersion?.liveVersion
+                ? <>
+                  <BootstrapDialog
+                    onClose={updateCancel}
+                    aria-labelledby="customized-dialog-title"
+                    open={isUpdate}
+                    // sx={{ width: "400px", ml: "-20px" }}
+                  >
+                   
+                    <IconButton
+                      aria-label="close"
+                      onClick={updateCancel}
+                      sx={{
+                        position: "absolute",
+                        right: 8,
+                        top: 8,
+                        color: (theme) => theme.palette.grey[500],
+                      }}
+                    >
+                      {product?.forceUpdate ?  "" : <CloseIcon sx={{zIndex:5,}} />}
+                    </IconButton>
+                    <DialogContent  sx={{ '.MuiDialogContent-root&.MuiDialogContent-root': { py: 0 } }} >
+                      <Link href={product.updateUrl ?? ""} target="_blank"
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          width: '100%'
+                        }}  >
+                        <Box
+                          component="img"
+                          sx={{
+                            height: 164,
+                            // width: 200,
 
+                          }}
+                          src={product.updateBannerUrl ?? ''}
+                          alt={product.updateBannerUrl ?? ''}
+                        />
+                      </Link>
+                    </DialogContent>
+                  </BootstrapDialog>
+
+                </>
+                :
+                <></>}
 
               <Stack
                 direction="row"
@@ -797,7 +908,7 @@ const Form = () => {
           )}
         </Box>
 
- 
+
 
         {isLoading ? (
           <div
@@ -859,7 +970,7 @@ const Form = () => {
                 </Box>
 
                 <Box className="mainBox">
-              
+
                   {selectedTabId == 0 ? <>
                     <Grid
                       container
@@ -1072,7 +1183,7 @@ const Form = () => {
                                 </Typography>
 
                                 <Typography variant="p">
-                                  {t("date")}:{" "}
+                                  {t("lastDate")}:{" "}
                                   {dateFormat(
                                     scrapData[selectedKeywordId]?.createdAt,
                                     true
@@ -1194,41 +1305,41 @@ const Form = () => {
                                 fullWidth
                               />
                               <FormControl fullWidth >
-                              <InputLabel>{t("language")}</InputLabel>
-                              <Select
-                                value={selectLang}
-                                size="small"
-                                label={t("language")}
-                                onChange={(e) =>
-                                  setSelectLang(e.target.value)
-                                }
+                                <InputLabel>{t("language")}</InputLabel>
+                                <Select
+                                  value={selectLang}
+                                  size="small"
+                                  label={t("language")}
+                                  onChange={(e) =>
+                                    setSelectLang(e.target.value)
+                                  }
 
-                                MenuProps={{
-                                  PaperProps: {
-                                    sx: {
-                                      width: "10%",
-                                      maxHeight: {
-                                        xs:
-                                          MOBILE_ITEM_HEIGHT * MENU_ITEMS +
-                                          ITEM_PADDING_TOP,
-                                        sm:
-                                          ITEM_HEIGHT * MENU_ITEMS +
-                                          ITEM_PADDING_TOP,
+                                  MenuProps={{
+                                    PaperProps: {
+                                      sx: {
+                                        width: "10%",
+                                        maxHeight: {
+                                          xs:
+                                            MOBILE_ITEM_HEIGHT * MENU_ITEMS +
+                                            ITEM_PADDING_TOP,
+                                          sm:
+                                            ITEM_HEIGHT * MENU_ITEMS +
+                                            ITEM_PADDING_TOP,
+                                        },
                                       },
                                     },
-                                  },
-                                }}
+                                  }}
 
-                              >
-                                 {langList.map((x, i) => (
-                                  <MenuItem
-                                    // key={x.key}
-                                    value={x.key}
-                                  >
-                                    {x.name}
-                                  </MenuItem>
-                                ))}
-                              </Select>
+                                >
+                                  {langList.map((x, i) => (
+                                    <MenuItem
+                                      // key={x.key}
+                                      value={x.key}
+                                    >
+                                      {x.name}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
                               </FormControl>
                             </Stack>
                           </Grid>
@@ -1308,7 +1419,7 @@ const Form = () => {
                               secondary={
                                 <Link
                                   underline="none"
-                                  href={"tel:"+product?.contactNumber}
+                                  href={"tel:" + product?.contactNumber}
                                   target="_blank"
                                   variant="body2"
                                 >
@@ -1331,7 +1442,7 @@ const Form = () => {
                               secondary={
                                 <Link
                                   underline="none"
-                                  href={"mailto:"+product?.email}
+                                  href={"mailto:" + product?.email}
                                   variant="body2"
                                   target="_blank"
                                 >
@@ -1386,7 +1497,7 @@ const Form = () => {
                   divider={<Divider orientation="vertical" flexItem />}
                   sx={{ mt: 2 }}
                 >
-                  <Typography variant="caption">v1.1</Typography>
+                  <Typography variant="caption">{`V ${localmanifestVersion?.localVersion ?? ""}`}</Typography>
 
                 </Stack>
               </>
@@ -1653,13 +1764,24 @@ const Form = () => {
                             // }
                             />
                           </Grid>
-
+                          <Grid item>
+                            <Stack
+                              direction="row"
+                              justifyContent="flex-end"
+                              alignItems="center"
+                              sx={{ cursor: "pointer", mt: -2, mr: 1 }}
+                            >
+                              <Typography onClick={getTrial} variant="body2" >
+                                {t("getTrial")}
+                              </Typography>
+                            </Stack>
+                          </Grid>
                           <Stack
                             direction="row"
                             justifyContent="center"
                             alignItems="center"
                             spacing={2}
-                            sx={{ mt: 2 }}
+                            sx={{ mt: 0 }}
                           >
                             <Button
                               variant="contained"
@@ -1675,13 +1797,18 @@ const Form = () => {
                                   size="small"
                                   variant="outlined"
                                   color="success"
-                                  href={
-                                    product?.siteUrl
-                                      ? product.siteUrl
-                                      : rData?.buy_url
-                                  }
+
                                 >
-                                  {t("buyNow")}
+                                  <Link
+                                    underline="none"
+                                    href={
+                                      product?.siteUrl
+                                        ? product.siteUrl
+                                        : rData?.buy_url
+                                    } target="_blank" >
+                                    {t("buyNow")}
+                                  </Link>
+
                                 </Button>
                               </Grid>
                             ) : (

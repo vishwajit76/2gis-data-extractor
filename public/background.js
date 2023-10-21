@@ -482,7 +482,46 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     //     sendResponse({ status: false, message: "rerbranding data not found" });
     //   }
     // });
+  }else if (message.type === "get_version"){
+    var manifestVersion = chrome.runtime.getManifest();
+    console.log("manifestVersion.version",manifestVersion.version);
+    const version = {
+      localVersion:manifestVersion.version,
+      liveVersion:manifestVersion.version.replace(/\./g, "")
+    }
+    sendResponse({
+      version
+    })
+  }else if (message.type === "get_trial") {
+
+    var requestOptions = {
+      device_id: DEVICE_ID,
+      // device_id:"121",
+      product_id: PRODUCT_ID,
+    };
+
+    fetch(API_BASE + "get-trial", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestOptions),
+    })
+      .then((response) => response.json())
+      .then((res) => {
+
+        sendResponse(res);
+      })
+      .catch((err) => {
+        console.log("One day demo Error:", err)
+        sendResponse({
+          status: true,
+          message: "serverError",
+        });
+      });
+
   }
+
 
   return true;
 });
