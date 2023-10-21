@@ -230,7 +230,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       .catch((err) => {
         console.log("Renew Error:",err)
         sendResponse({
-          status: true,
+          status: false,
           message: "serverError",
         });
       });
