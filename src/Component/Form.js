@@ -843,7 +843,7 @@ const Form = () => {
                         <Box
                           component="img"
                           sx={{
-                            height: 164,
+                            height: 160,
                             // width: 200,
 
                           }}
@@ -1023,8 +1023,8 @@ const Form = () => {
 
                       </form>
                       <Grid item xs={12}>
-                        <Box sx={{ mt: 4 }} >
-                          {product != null ? <AutoPlaySwipeableViews
+                      {product != null && rData?.show_ads == true ?<Box sx={{ mt: 2,width:"355px" }} >
+                           <AutoPlaySwipeableViews
                             axis={themeSlider.direction === 'rtl' ? 'x-reverse' : 'x'}
                             index={activeStep}
                             onChangeIndex={(step) => setActiveStep(step)}
@@ -1039,7 +1039,7 @@ const Form = () => {
                                   display: 'flex',
                                   justifyContent: 'center',
                                   alignItems: 'center',
-                                  width: '100%'
+                                  // width: '100%'
                                 }}  >
                                 <Box
                                   component="img"
@@ -1075,9 +1075,9 @@ const Form = () => {
                                     height: 200,
                                     display: 'block',
                                     overflow: 'hidden',
-                                    maxWidth: 350,
-                                    width: '100%',
-                                    ml: '2px'
+                                    maxWidth: 355,
+                                    width: '355px',
+                                    // ml: '2px'
                                   }}
                                   src={get_youtube_thumbnail(product.demoVideoUrl ?? '', 'high')}
 
@@ -1085,7 +1085,7 @@ const Form = () => {
                                 />
                               </Link> : <></>}
 
-                          </AutoPlaySwipeableViews> : <></>}
+                          </AutoPlaySwipeableViews>
                           <MobileStepper
                             steps={totalSlider()}
                             position="static"
@@ -1115,7 +1115,7 @@ const Form = () => {
                               </Button>
                             }
                           />
-                        </Box>
+                        </Box>:<></>}
                       </Grid>
                     </Grid>
                   </> : <></>}
@@ -1406,10 +1406,10 @@ const Form = () => {
                       <Typography variant="caption">
                         {t("contactWithEmail")}
                       </Typography>
-
                       <List>
-                        {product?.contactNumber != "" ? (
+                        {rData?.active_shop == true ?(
                           <ListItem>
+                             {product.contactNumber != "" ? <>
                             <ListItemAvatar>
                               <PhoneIcon />
                             </ListItemAvatar>
@@ -1420,19 +1420,42 @@ const Form = () => {
                                 <Link
                                   underline="none"
                                   href={"tel:" + product?.contactNumber}
-                                  target="_blank"
                                   variant="body2"
+                                  target="_blank"
                                 >
                                   {product?.contactNumber}
                                 </Link>
                               }
                             />
+                            </>:<></>}
                           </ListItem>
                         ) : (
-                          <></>
+                          <> <ListItem>
+                          {rData.phone != "" ? <>
+                         <ListItemAvatar>
+                           <PhoneIcon />
+                         </ListItemAvatar>
+                         <ListItemText
+                           sx={{ my: 0 }}
+                           primary={t("phone")}
+                           secondary={
+                             <Link
+                               underline="none"
+                               href={"tel:" + rData?.phone }
+                               variant="body2"
+                               target="_blank"
+                             >
+                               {rData?.phone }
+                             </Link>
+                           }
+                         />
+                         </>:<></>}
+                       </ListItem>
+                          </>
                         )}
-                        {product?.email != "" ? (
+                        {rData?.active_shop == true ? (
                           <ListItem>
+                            {product.email != "" ? <>
                             <ListItemAvatar>
                               <EmailOutlinedIcon />
                             </ListItemAvatar>
@@ -1450,12 +1473,34 @@ const Form = () => {
                                 </Link>
                               }
                             />
+                            </>:<></>}
                           </ListItem>
                         ) : (
-                          <></>
+                          <><ListItem>
+                          {rData.email != "" ? <>
+                          <ListItemAvatar>
+                            <EmailOutlinedIcon />
+                          </ListItemAvatar>
+                          <ListItemText
+                            sx={{ my: 0 }}
+                            primary={t("email")}
+                            secondary={
+                              <Link
+                                underline="none"
+                                href={"mailto:" + rData?.email}
+                                variant="body2"
+                                target="_blank"
+                              >
+                                {rData?.email}
+                              </Link>
+                            }
+                          />
+                          </>:<></>}
+                        </ListItem></>
                         )}
-                        {product?.siteUrl != "" ? (
+                        {rData?.active_shop == true  ? (
                           <ListItem>
+                            {product.siteUrl != "" ? <>
                             <ListItemAvatar>
                               <LanguageIcon />
                             </ListItemAvatar>
@@ -1473,9 +1518,34 @@ const Form = () => {
                                 </Link>
                               }
                             />
+                            </>:<>
+                            </>}
                           </ListItem>
                         ) : (
-                          <></>
+                          <>
+                              <ListItem>
+                            {rData.siteUrl != "" ? <>
+                            <ListItemAvatar>
+                              <LanguageIcon />
+                            </ListItemAvatar>
+                            <ListItemText
+                              sx={{ my: 0 }}
+                              primary={t("website")}
+                              secondary={
+                                <Link
+                                  underline="none"
+                                  href={rData?.siteUrl}
+                                  variant="body2"
+                                  target="_blank"
+                                >
+                                  {rData?.siteUrl}
+                                </Link>
+                              }
+                            />
+                            </>:<>
+                            </>}
+                          </ListItem>
+                          </>
                         )}
                       </List>
 

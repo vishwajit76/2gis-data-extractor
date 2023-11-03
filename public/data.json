@@ -6,7 +6,7 @@
         "reseller_id": "64df78b4baa196b8e4cd837d",
         "show_ads": true,
         "active_shop": true,
-        "buy_url": "https://digitztech.com",
+        "buy_url": "https://digibulkmarketing.com/shop/?currency=INR",
         "theme": "dark",
         "theme_setting": {
             "primary-color": "#444455"
@@ -19,7 +19,7 @@
         "logo_long": "logo-long.png",
         "app_logo":"icon.png",
         "renew":true,
-        "email":"info@digitztech.com",
-        "phone":"+971543060660",
-        "siteUrl":"https://digitztech.com"
+        "email":"info@digibulkmarketing.com",
+        "phone":"1800 889 8358",
+        "siteUrl":"https://digibulkmarketing.in"
 }
