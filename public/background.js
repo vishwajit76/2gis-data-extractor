@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 // chrome.storage.local.remove('isCheckActive');
-var DEVICE_ID = "xyz";
+var DEVICE_ID = "";
 var DATA = {};
 const PRODUCT_ID = "650d35262fc68dbaa51329b5";
 var DATA = {};
